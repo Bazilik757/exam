@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Мои подборки{% endblock %}
+{% block content %}
+<style>
+/* --- СТИЛИ ТАБЛИЦЫ И КНОПОК --- */
+.table {
+    background: #fffbe7;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(255,182,155,0.10);
+}
+.table thead th {
+    background: linear-gradient(90deg,#ffe3dc 0%, #ffd6c0 100%);
+    color: #2d3142;
+    font-weight: 700;
+    border: none;
+    font-size: 1.1em;
+}
+.table tbody td {
+    vertical-align: middle;
+    font-size: 1.04em;
+    color: #4f5d75;
+    border: none;
+    background: #fff;
+}
+.table tr {
+    transition: background 0.18s;
+}
+.table tbody tr:hover {
+    background: #fff0e1;
+}
+.btn {
+    border-radius: 16px;
+    font-weight: 700;
+    padding: 0.48em 1.2em;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255,182,155,0.10);
+    transition: background 0.18s, color 0.18s, transform 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+.btn-primary {
+    background: linear-gradient(90deg,#ffbfae 0%, #ffd6c0 100%);
+    color: #2d3142;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: #ffd6c0;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-success {
+    background: linear-gradient(90deg,#ffd6c0 0%, #ffbfae 100%);
+    color: #2d3142;
+}
+.btn-success:hover, .btn-success:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-secondary {
+    background: linear-gradient(90deg,#ffe3dc 0%, #ffd6c0 100%);
+    color: #2d3142;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.modal-content {
+    border-radius: 24px;
+    background: #fffbe7;
+    border: 2px solid #ffd6c0;
+    box-shadow: 0 4px 32px rgba(255,182,155,0.15);
+}
+.modal-header, .modal-footer {
+    border: none;
+    background: transparent;
+}
+.modal-title {
+    color: #ff6f61;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.form-control {
+    border: 2px solid #ffd6c0;
+    border-radius: 12px;
+    background: #fff;
+    color: #2d3142;
+    box-shadow: 0 1px 6px rgba(255,182,155,0.05);
+    font-size: 1.06em;
+}
+.form-control:focus {
+    border-color: #ffbfae;
+    box-shadow: 0 0 0 2px #ffbfae;
+}
+@media (max-width: 600px) {
+    .table {
+        font-size: 0.97em;
+    }
+    .modal-content {
+        border-radius: 14px;
+    }
+}
+</style>
+
+<h3 class="mb-4" style="font-weight:700; color:#ff6f61;">
+    <i class="bi bi-bookmarks"></i> Мои подборки
+</h3>
+<table class="table align-middle">
+    <thead>
+        <tr>
+            <th><i class="bi bi-card-text"></i> Название</th>
+            <th><i class="bi bi-collection"></i> Кол-во книг</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in collections %}
+        <tr>
+            <td>{{ c.name }}</td>
+            <td>{{ c.books|length }}</td>
+            <td>
+                <a href="{{ url_for('collections.view_collection', collection_id=c.id) }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-eye-fill"></i> Просмотр
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#addCollectionModal">
+    <i class="bi bi-plus-circle"></i> Добавить подборку
+</button>
+
+<div class="modal fade" id="addCollectionModal" tabindex="-1" aria-labelledby="addCollectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="addCollectionForm" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCollectionModalLabel">
+            <i class="bi bi-journal-plus"></i> Новая подборка
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="text" name="name" class="form-control" placeholder="Название подборки" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Отмена
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Добавить
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('addCollectionForm').onsubmit = function(e) {
+    e.preventDefault();
+    fetch('{{ url_for("collections.add_collection") }}', {
+        method: 'POST',
+        body: new FormData(this),
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            alert(data.message);
+        }
+    });
+};
+</script>
+{% endblock %}
+

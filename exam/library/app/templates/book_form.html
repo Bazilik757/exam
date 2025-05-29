@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if mode == 'edit' %}Редактировать книгу{% else %}Добавить книгу{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+.form-label {
+    font-weight: 700;
+    color: #ff6f61;
+    letter-spacing: 0.3px;
+}
+.form-label.genres-label::before {
+    content: "\f03a";
+    font-family: "bootstrap-icons";
+    margin-right: 0.5em;
+    color: #ffbfae;
+    font-size: 1.1em;
+    vertical-align: middle;
+}
+.form-control, .form-select {
+    border: 2px solid #ffd6c0;
+    border-radius: 14px;
+    background: #fff;
+    color: #2d3142;
+    box-shadow: 0 1px 6px rgba(255,182,155,0.05);
+    font-size: 1.07em;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #ffbfae;
+    box-shadow: 0 0 0 2px #ffbfae;
+}
+.form-select[multiple] {
+    min-height: 120px;
+    background: #fff8f5;
+    border: 2px solid #ffbfae;
+    border-radius: 14px;
+    padding: 0.7em 1em;
+    font-size: 1.07em;
+    color: #2d3142;
+    box-shadow: 0 1px 6px rgba(255,182,155,0.07);
+    transition: border-color 0.18s, box-shadow 0.18s;
+    cursor: pointer;
+}
+.form-select[multiple]:focus {
+    border-color: #ff6f61;
+    box-shadow: 0 0 0 2px #ffbfae;
+    background: #fff0eb;
+}
+.form-select[multiple] option {
+    padding: 0.3em 0.7em;
+    border-radius: 8px;
+    margin: 2px 0;
+    color: #2d3142;
+    background: #fff;
+    transition: background 0.18s, color 0.18s;
+}
+.form-select[multiple] option:checked {
+    background: linear-gradient(90deg, #ffd6c0 0%, #ffbfae 100%);
+    color: #ff6f61;
+    font-weight: bold;
+}
+.form-text {
+    color: #b87d5c;
+    font-size: 0.97em;
+}
+.btn {
+    border-radius: 16px;
+    font-weight: 700;
+    padding: 0.48em 1.2em;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255,182,155,0.10);
+    transition: background 0.18s, color 0.18s, transform 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+.btn-success {
+    background: linear-gradient(90deg,#ffd6c0 0%, #ffbfae 100%);
+    color: #2d3142;
+}
+.btn-success:hover, .btn-success:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-secondary {
+    background: linear-gradient(90deg,#ffe3dc 0%, #ffd6c0 100%);
+    color: #2d3142;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+h2 {
+    color: #ff6f61;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+@media (max-width: 600px) {
+    .form-control, .form-select {
+        font-size: 1em;
+        border-radius: 10px;
+    }
+    h2 {
+        font-size: 1.2em;
+    }
+}
+</style>
+
+<h2>
+    {% if mode == 'edit' %}
+        <i class="bi bi-pencil-square"></i> Редактировать книгу
+    {% else %}
+        <i class="bi bi-plus-circle"></i> Добавить книгу
+    {% endif %}
+</h2>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows=6) }}
+        <div class="form-text">
+            <i class="bi bi-markdown"></i> Поддерживается <a href="https://ru.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>
+        </div>
+    </div>
+    <div class="mb-3">
+        {{ form.year.label(class="form-label") }}
+        {{ form.year(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.publisher.label(class="form-label") }}
+        {{ form.publisher(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.author.label(class="form-label") }}
+        {{ form.author(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.pages.label(class="form-label") }}
+        {{ form.pages(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.genres.label(class="form-label genres-label") }}
+        {{ form.genres(class="form-select", multiple=true) }}
+    </div>
+    {% if mode != 'edit' %}
+    <div class="mb-3">
+        {{ form.cover.label(class="form-label") }}
+        {{ form.cover(class="form-control") }}
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle"></i> {{ form.submit.label.text }}
+    </button>
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Отмена
+    </a>
+</form>
+{% endblock %}
+

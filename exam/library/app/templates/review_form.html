@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Рецензия на {{ book.title }}{% endblock %}
+
+{% block content %}
+<style>
+.btn {
+    border-radius: 16px;
+    font-weight: 700;
+    padding: 0.48em 1.2em;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255,182,155,0.10);
+    transition: background 0.18s, color 0.18s, transform 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+.btn-primary {
+    background: linear-gradient(90deg,#ffbfae 0%, #ffd6c0 100%);
+    color: #2d3142;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: #ffd6c0;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-success {
+    background: linear-gradient(90deg,#ffd6c0 0%, #ffbfae 100%);
+    color: #2d3142;
+}
+.btn-success:hover, .btn-success:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-secondary {
+    background: linear-gradient(90deg,#ffe3dc 0%, #ffd6c0 100%);
+    color: #2d3142;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+.btn-danger {
+    background: linear-gradient(90deg,#ff6f61 0%, #ffbfae 100%);
+    color: #fff;
+}
+.btn-danger:hover, .btn-danger:focus {
+    background: #ffbfae;
+    color: #ff6f61;
+    transform: translateY(-2px) scale(1.04);
+}
+</style>
+
+<h3 class="mb-4" style="font-weight:700; color:#ff6f61;">
+    <i class="bi bi-chat-dots"></i> Рецензия на книгу «{{ book.title }}»
+</h3>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.rating.label(class="form-label") }}
+        {{ form.rating(class="form-select") }}
+    </div>
+    <div class="mb-3">
+        {{ form.text.label(class="form-label") }}
+        {{ form.text(class="form-control", rows=6) }}
+        <div class="form-text">
+            Поддерживается <a href="https://ru.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle"></i> {{ form.submit.label.text }}
+    </button>
+    <a href="{{ url_for('books.view_book', book_id=book.id) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Отмена
+    </a>
+</form>
+
+{# Кнопки "Редактировать" и "Удалить" — доступны админу, модератору и автору рецензии #}
+{% if review is defined and current_user.is_authenticated and
+      (current_user.role.name in ['Администратор', 'Модератор'] or review.user_id == current_user.id) %}
+    <div class="mt-4">
+        <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-pencil-fill"></i> Редактировать
+        </a>
+        <form action="{{ url_for('reviews.delete_review', review_id=review.id) }}" method="post" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить рецензию?');">
+                <i class="bi bi-x-circle-fill"></i> Удалить
+            </button>
+        </form>
+    </div>
+{% endif %}
+{% endblock %}
+

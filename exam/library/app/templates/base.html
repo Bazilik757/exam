@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Электронная библиотека{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #fffbe7;
+            color: #2d3142;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: #fffbe7;
+            border-bottom: 3px solid #ffbfae;
+            box-shadow: 0 2px 18px rgba(255,182,155,0.10);
+        }
+        .navbar-brand, .navbar-nav .nav-link, .navbar-text {
+            color: #2d3142 !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .navbar-nav .nav-link.active, .navbar-nav .nav-link:focus, .navbar-nav .nav-link:hover {
+            color: #ff6f61 !important;
+            background: #ffe3dc;
+            border-radius: 10px;
+        }
+        .btn-primary, .btn-success, .btn-warning, .btn-danger {
+            background: #ffbfae;
+            border: none;
+            color: #2d3142;
+            font-weight: 700;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(255,182,155,0.08);
+            transition: background 0.3s, transform 0.2s;
+            padding: 0.6em 1.5em;
+        }
+        .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+            background: #ffd6c0;
+            color: #2d3142;
+            transform: translateY(-2px) scale(1.05);
+        }
+        .form-select, .form-control {
+            border: 2px solid #ffd6c0;
+            border-radius: 10px;
+            background: #fff;
+            color: #2d3142;
+            box-shadow: 0 1px 6px rgba(255,182,155,0.05);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #ffbfae;
+            box-shadow: 0 0 0 2px #ffbfae;
+        }
+        .badge.bg-secondary {
+            background-color: #ff6f61 !important;
+            color: #fff;
+            font-size: 1em;
+            border-radius: 8px;
+            padding: 0.4em 0.8em;
+        }
+        /* Новый стиль карточки */
+        .custom-book-card {
+            position: relative;
+            min-height: 260px;
+            display: flex;
+            align-items: stretch;
+            border: none;
+            border-radius: 32px;
+            background: linear-gradient(135deg, #ffe3dc 0%, #ffd6c0 100%);
+            color: #2d3142;
+            box-shadow: 0 8px 32px rgba(255,182,155,0.18);
+            margin-bottom: 2.5rem;
+            padding: 0;
+            overflow: hidden;
+            transition: box-shadow 0.4s, transform 0.3s;
+        }
+        .custom-book-card:hover {
+            box-shadow: 0 16px 48px rgba(255,111,97,0.18);
+            transform: translateY(-6px) scale(1.02);
+        }
+        .custom-book-card .row {
+            width: 100%;
+            margin: 0;
+            --bs-gutter-x: 0;
+        }
+        .custom-book-card .card-body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.2rem 2rem 2rem 2.7rem;
+            z-index: 2;
+            background: transparent;
+        }
+        .custom-book-card .book-cover-col {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 2rem;
+            background: transparent;
+        }
+        .custom-book-card .book-cover {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 6px solid #ffbfae;
+            box-shadow: 0 4px 24px rgba(255,182,155,0.18);
+            background: #fff;
+        }
+        .custom-book-card .card-title {
+            font-weight: 800;
+            font-size: 1.5em;
+            margin-bottom: 0.5em;
+            letter-spacing: 0.5px;
+        }
+        .custom-book-card .card-text {
+            font-size: 1.08em;
+            color: #4f5d75;
+            margin-bottom: 0.8em;
+        }
+        .custom-book-card .btn-group {
+            margin-top: 1.2rem;
+        }
+        .ribbon {
+            position: absolute;
+            left: -40px;
+            top: 18px;
+            background: linear-gradient(90deg,#ffbfae 60%,#ff6f61 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1em;
+            padding: 0.5em 2.5em;
+            transform: rotate(-25deg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255,111,97,0.12);
+            letter-spacing: 1px;
+        }
+        .alert {
+            border-left: 6px solid #ff6f61;
+            border-radius: 12px;
+            background: #ffd6c0;
+            color: #2d3142;
+            font-weight: 600;
+            box-shadow: 2px 2px 12px #ffe3dc;
+        }
+        footer {
+            background: #ffd6c0;
+            color: #ff6f61;
+            border-top: 3px solid #ffbfae;
+            padding: 1.2rem 0;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 24px 24px 0 0;
+            margin-top: 2rem;
+            box-shadow: 0 -2px 24px #ffd6c0;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+            background: #e0c3fc;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffd6c0;
+            border-radius: 8px;
+        }
+        * {
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        @media (max-width: 767px) {
+            .custom-book-card .row {
+                flex-direction: column-reverse;
+            }
+            .custom-book-card .card-body {
+                padding: 1.5rem 1rem 1rem 1rem;
+            }
+            .custom-book-card .book-cover-col {
+                justify-content: center;
+                padding: 1rem 0 1rem 0;
+            }
+            .custom-book-card .book-cover {
+                border-radius: 50%;
+                max-width: 120px;
+                height: 120px;
+            }
+            .ribbon {
+                left: -24px;
+                top: 12px;
+                font-size: 0.95em;
+                padding: 0.4em 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="content-wrapper">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="bi bi-book-half"></i> Электронная библиотека
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Книги</a>
+                    </li>
+                    {% if current_user.is_authenticated and current_user.role.name == 'Пользователь' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('collections.my_collections') }}">Мои подборки</a>
+                        </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.role.name == 'Администратор' %}
+                        <li class="nav-item mx-auto">
+                            <a class="nav-link" href="{{ url_for('books.add_book') }}">Добавить книгу</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text">
+                                <i class="bi bi-person-circle"></i>
+                                {{ current_user.username }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Выйти</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Войти</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}"><i class="bi bi-person-plus"></i> Регистрация</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 flex-grow-1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<footer class="text-center">
+    Группа 231-351, Пономарева Алина
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
