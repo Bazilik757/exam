@@ -67,6 +67,15 @@
     color: #ff6f61;
     transform: translateY(-2px) scale(1.04);
 }
+.btn-danger {
+    background: linear-gradient(90deg,#ff7e7e 0%, #ff6f61 100%);
+    color: #fff;
+}
+.btn-danger:hover, .btn-danger:focus {
+    background: #ff6f61;
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
 .modal-content {
     border-radius: 24px;
     background: #fffbe7;
@@ -120,10 +129,16 @@
         <tr>
             <td>{{ c.name }}</td>
             <td>{{ c.books|length }}</td>
-            <td>
+            <td style="display: flex; gap: 0.5em; flex-wrap: wrap;">
                 <a href="{{ url_for('collections.view_collection', collection_id=c.id) }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-eye-fill"></i> Просмотр
                 </a>
+                <form method="POST" action="{{ url_for('collections.delete_collection', collection_id=c.id) }}" style="display: inline-block;" onsubmit="return confirm('Вы уверены, что хотите удалить подборку?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash-fill"></i> Удалить
+                    </button>
+                </form>
             </td>
         </tr>
         {% endfor %}
@@ -178,4 +193,6 @@ document.getElementById('addCollectionForm').onsubmit = function(e) {
 };
 </script>
 {% endblock %}
+
+
 

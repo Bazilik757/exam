@@ -10,7 +10,6 @@ main_bp = Blueprint('main', __name__)
 def index():
     page = request.args.get('page', 1, type=int)
 
-    # Просто все книги, без фильтрации
     query = Book.query
 
     genres = Genre.query.order_by(Genre.name).all()
@@ -30,7 +29,6 @@ def index():
             'review_count': review_count
         })
 
-    # --- Популярные книги за последние 3 месяца ---
     now = datetime.utcnow()
     three_months_ago = now - timedelta(days=90)
     popular_books = db.session.query(
@@ -39,7 +37,6 @@ def index():
         BookView.viewed_at >= three_months_ago
     ).group_by(Book.id).order_by(func.count(BookView.id).desc()).limit(5).all()
 
-    # --- Недавно просмотренные книги ---
     recent_books = []
     if current_user.is_authenticated:
         recent_views = BookView.query.filter_by(user_id=current_user.id).order_by(BookView.viewed_at.desc()).limit(5).all()

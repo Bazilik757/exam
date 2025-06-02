@@ -25,13 +25,18 @@
                 </div>
             </form>
             {% if current_user.is_authenticated and (
-      current_user.is_admin() or
-      current_user.is_moderator() or
-      review.user_id == current_user.id
-) %}
-    <form action="{{ url_for('reviews.delete_review', review_id=review.id) }}" method="post" class="mt-3">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить рецензию?');">Удалить</button>
-    </form>
-{% endif %}
+                current_user.is_admin() or
+                current_user.is_moderator() or
+                review.user_id == current_user.id
+            ) %}
+                <form action="{{ url_for('reviews.delete_review', review_id=review.id) }}" method="post" class="mt-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить рецензию?');">Удалить</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 

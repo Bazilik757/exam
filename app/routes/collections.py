@@ -19,7 +19,7 @@ def view_collection(collection_id):
     collection = Collection.query.get_or_404(collection_id)
     if collection.user_id != current_user.id:
         flash('Нет доступа к этой подборке.', 'danger')
-        return redirect(url_for('my_collections.html'))
+        return redirect(url_for('collections.my_collections'))
     return render_template('view_collection.html', collection=collection)
 
 @collections_bp.route('/collections/add', methods=['POST'])
@@ -28,11 +28,14 @@ def add_collection():
     name = request.form.get('name', '').strip()
     if not name:
         return jsonify({'success': False, 'message': 'Название не может быть пустым.'}), 400
+    exists = Collection.query.filter_by(user_id=current_user.id, name=name).first()
+    if exists:
+        return jsonify({'success': False, 'message': 'Подборка с таким названием уже существует.'}), 400
     new_collection = Collection(name=name, user_id=current_user.id)
     db.session.add(new_collection)
     db.session.commit()
     flash('Подборка успешно создана!', 'success')
-    return jsonify({'success': True, 'redirect': url_for('my_collections')})
+    return jsonify({'success': True, 'redirect': url_for('collections.my_collections')})
 
 @collections_bp.route('/collections/<int:collection_id>/add_book', methods=['POST'])
 @login_required
@@ -52,3 +55,17 @@ def add_book_to_collection(collection_id):
     db.session.commit()
     flash('Книга добавлена в подборку!', 'success')
     return jsonify({'success': True, 'redirect': url_for('books.view_book', book_id=book.id)})
+
+@collections_bp.route('/collections/<int:collection_id>/delete', methods=['POST'])
+@login_required
+def delete_collection(collection_id):
+    collection = Collection.query.get_or_404(collection_id)
+    if collection.user_id != current_user.id:
+        flash('Нет прав на удаление этой подборки.', 'danger')
+        return redirect(url_for('collections.my_collections'))
+    db.session.delete(collection)
+    db.session.commit()
+    flash('Подборка успешно удалена!', 'success')
+    return redirect(url_for('collections.my_collections'))
+
+
